@@ -63,6 +63,7 @@ function add(){
                             success : function(data) {
                                 $("#title").val("");
                                 $("#comment").val("");
+                                $("#file").val("");
                                 loadThread();
                                 }
                             });
