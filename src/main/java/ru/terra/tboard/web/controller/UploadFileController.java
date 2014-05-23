@@ -27,19 +27,22 @@ public class UploadFileController {
             @FormDataParam("file") InputStream uploadedInputStream,
             @FormDataParam("file") FormDataContentDisposition fileDetail) {
 
-        String fileName = "";
-        String uploadFileFileName = fileDetail.getFileName();
-        fileName += String.valueOf(new Date().getTime());
-        fileName += uploadFileFileName.substring(uploadFileFileName.lastIndexOf("."), uploadFileFileName.length());
+        if (uploadedInputStream != null && fileDetail != null && fileDetail.getFileName() != null) {
 
-        String uploadedFileLocation = FilePatchConstants.getPiczFolder() + "/" + thread + "/" + fileName;
-        // save it
-        File targetDir = new File(FilePatchConstants.getPiczFolder() + "/" + thread + "/");
-        if (!targetDir.exists())
-            targetDir.mkdirs();
-        writeToFile(uploadedInputStream, uploadedFileLocation);
-        return new SimpleDataDTO<>(fileName);
+            String fileName = "";
+            String uploadFileFileName = fileDetail.getFileName();
+            fileName += String.valueOf(new Date().getTime());
+            fileName += uploadFileFileName.substring(uploadFileFileName.lastIndexOf("."), uploadFileFileName.length());
 
+            String uploadedFileLocation = FilePatchConstants.getPiczFolder() + "/" + thread + "/" + fileName;
+            // save it
+            File targetDir = new File(FilePatchConstants.getPiczFolder() + "/" + thread + "/");
+            if (!targetDir.exists())
+                targetDir.mkdirs();
+            writeToFile(uploadedInputStream, uploadedFileLocation);
+            return new SimpleDataDTO<>(fileName);
+        } else
+            return new SimpleDataDTO<>("");
     }
 
     // save uploaded file to new location

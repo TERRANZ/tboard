@@ -1,10 +1,13 @@
 package ru.terra.tboard.web.controller;
 
 import com.sun.jersey.api.core.HttpContext;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.terra.server.controller.AbstractController;
 import ru.terra.server.dto.SimpleDataDTO;
+import ru.terra.tboard.constants.FilePatchConstants;
 import ru.terra.tboard.constants.URLConstants;
 import ru.terra.tboard.db.entity.Post;
 import ru.terra.tboard.engine.PostEngine;
@@ -12,7 +15,9 @@ import ru.terra.tboard.web.dto.PostDTO;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import java.io.*;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,18 +40,35 @@ public class PostController extends AbstractController<Post, PostDTO, PostEngine
 
     @POST
     @Path(URLConstants.Post.ADD)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     public SimpleDataDTO<Boolean> doAddPost(
             @Context HttpContext hc,
-            @FormParam("board") String board,
-            @FormParam("title") String title,
-            @FormParam("comment") String comment,
-            @FormParam("parent") Integer parent,
-            @FormParam("image") String image) {
+            @FormDataParam("board") String board,
+            @FormDataParam("title") String title,
+            @FormDataParam("comment") String comment,
+            @FormDataParam("parent") Integer parent,
+            @FormDataParam("file") InputStream uploadedInputStream,
+            @FormDataParam("file") FormDataContentDisposition fileDetail) {
         logger.info("board: " + board);
         logger.info("title: " + title);
         logger.info("comment: " + comment);
         logger.info("parent: " + parent);
-        return new SimpleDataDTO<>(engine.createBean(new Post(title, comment, board, parent, image)) != null);
+        String fileName = "";
+        if (uploadedInputStream != null && fileDetail != null && fileDetail.getFileName() != null) {
+
+
+            String uploadFileFileName = fileDetail.getFileName();
+            fileName += String.valueOf(new Date().getTime());
+            fileName += uploadFileFileName.substring(uploadFileFileName.lastIndexOf("."), uploadFileFileName.length());
+
+            String uploadedFileLocation = FilePatchConstants.getPiczFolder() + "/" + parent + "/" + fileName;
+            // save it
+            File targetDir = new File(FilePatchConstants.getPiczFolder() + "/" + parent + "/");
+            if (!targetDir.exists())
+                targetDir.mkdirs();
+            writeToFile(uploadedInputStream, uploadedFileLocation);
+        }
+        return new SimpleDataDTO<>(engine.createBean(new Post(title, comment, board, parent, fileName)) != null);
     }
 
     @GET
@@ -86,4 +108,6 @@ public class PostController extends AbstractController<Post, PostDTO, PostEngine
         }
 
     }
+
+
 }

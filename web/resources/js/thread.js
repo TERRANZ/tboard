@@ -41,32 +41,24 @@ function add(){
     /* Add the file */
     formData.append("file", file.files[0]);
     formData.append("thread", thread);
-            $.ajax({
-            		url : '/tb/upload/file',
-            		type : 'post',
-            		async : true,
-            		data: formData,
-            		dataType: 'json',
-                    processData: false,
-                    contentType: false,
-            		success : function(data) {
-            		        $.ajax({
-                            url : '/tb/post/do.add',
-                            type : 'post',
-                            async : true,
-                            data : {
-                            board : board ,
-                            parent : thread,
-                            image : data.data,
-                            title : $("#title").val(),
-                            comment : $("#comment").val()},
-                            success : function(data) {
-                                $("#title").val("");
-                                $("#comment").val("");
-                                $("#file").val("");
-                                loadThread();
-                                }
-                            });
-           				}
-            	});
+    formData.append("board", board);
+    formData.append("parent", thread);
+    formData.append("title", $("#title").val());
+    formData.append("comment", $("#comment").val());
+    $.ajax({
+        url : '/tb/post/do.add',
+        type : 'post',
+        async : true,
+        data : formData,
+        dataType: 'json',
+        processData: false,
+        contentType: false,
+        success : function(data) {
+            $("#title").val("");
+            $("#comment").val("");
+            $("#file").val("");
+            loadThread();
+        }
+    });
+
 }

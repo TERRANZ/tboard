@@ -18,6 +18,15 @@
 <body>
 <!-- Home -->
 <div data-role="page" id="board1">
+    <div style="position: fixed; right: 0; padding: 100px; border: 1px solid dotted; width: 10%;">
+        <div>
+            <label>Сообщение</label>
+            <input id="title" hint="title"/>
+            <input id="comment" hint="comment"/>
+            <input type="file" id="file" size="10"/>
+            <input type="submit" data-icon="check" data-iconpos="left" value="Отправить" id="addbtn" onclick="add();">
+        </div>
+    </div>
     <div data-role="content">
         <div data-role="collapsible-set">
             <div data-role="collapsible" data-collapsed="false" id="messages_collapsable">
